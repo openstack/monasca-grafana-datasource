@@ -1,0 +1,52 @@
+<section class="grafana-metric-options gf-form-group">
+    <div class="gf-form-inline">
+        <div class="gf-form">
+            <span class="gf-form-label width-auto">
+                <i class="fa fa-info-circle"></i>
+                <a ng-click="ctrl.panelCtrl.toggleEditorHelp(1);" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+                    Dimension Templating
+                </a>
+            </span>
+            <span class="gf-form-label width-auto">
+                <i class="fa fa-info-circle"></i>
+                <a ng-click="ctrl.panelCtrl.toggleEditorHelp(2);" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+                    Aliasing
+                </a>
+            </span>
+            <span class="gf-form-label width-auto">
+                <i class="fa fa-info-circle"></i>
+                <a ng-click="ctrl.panelCtrl.toggleEditorHelp(3)" bs-tooltip="'click to show helpful info'" data-placement="bottom">
+                    Group By Time
+                </a>
+            </span>
+        </div>
+    </div>
+</section>
+
+<div class="pull-left">
+    <div class="grafana-info-box" style="border: 0;" ng-if="ctrl.panelCtrl.editorHelpIndex === 1">
+        <h5>Dimensions Templating</h5>
+        <ul ng-non-bindable>
+            <li>Template variables can be used as normal</li>
+            <li>$all : Use as a dimension value to automatically group the query by all valid values for the dimension</li>
+            <li>When 'group_by' is selected, $all will be ignored, and the query will group the data on all unspecified dimensions</li>
+        </ul>
+    </div>
+
+    <div class="grafana-info-box" style="border: 0;" ng-if="ctrl.panelCtrl.editorHelpIndex === 2">
+        <h5>Aliasing</h5>
+        <ul ng-non-bindable>
+            <li>Template variables can be used as normal</li>
+            <li>@dimension_name : Use to alias using the given dimension_name</li>
+        </ul>
+    </div>
+
+    <div class="grafana-info-box" style="border: 0;" ng-if="ctrl.panelCtrl.editorHelpIndex === 3">
+        <h5>Period</h5>
+        <ul ng-non-bindable>
+            <li>Required when function is not none</li>
+            <li>Defaults to seconds if s,m,h,d is not specified</li>
+            <li>Works with grafana interval templates</li>
+        </ul>
+    </div>
+</div>

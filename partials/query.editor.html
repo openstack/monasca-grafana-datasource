@@ -1,0 +1,99 @@
+<query-editor-row query-ctrl="ctrl" can-collapse="false">
+    <div>
+        <div class="gf-form-inline">
+            <div class="gf-form gf-form--grow">
+                <label class="gf-form-label query-keyword width-7">Metric</label>
+                <input
+                    type="text"
+                    class="gf-form-input"
+                    ng-model="ctrl.target.metric"
+                    spellcheck='false'
+                    placeholder="Metric Name"
+                    bs-typeahead="ctrl.suggestMetrics"
+                    data-min-length=0
+                    ng-blur="ctrl.onMetricChange()" >
+            </div>
+            <div class="gf-form max-width-15">
+                <label class="gf-form-label query-keyword">Alias</label>
+                <input
+                    type="text"
+                    class="gf-form-input"
+                    ng-model="ctrl.target.alias"
+                    spellcheck='false'
+                    placeholder="Alias"
+                    bs-typeahead="ctrl.suggestAlias"
+                    data-min-length=0
+                    ng-blur="ctrl.targetBlur()" >
+            </div>
+        </div>
+        <div class="gf-form-inline">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword width-7">Dimensions</label>
+            </div>
+            <div class="gf-form" ng-repeat="dimension in ctrl.target.dimensions track by $index">
+                <input
+                    type="text"
+                    class="gf-form-input max-width-7"
+                    placeholder="key"
+                    ng-model="dimension.key"
+                    bs-typeahead="ctrl.suggestDimensionKeys"
+                    ng-blur="ctrl.targetBlur()"
+                    data-min-length=0
+                    style="margin-right:0">
+                <label class="gf-form-label query-segment-operator" style="margin-right:0">=</label>
+                <input
+                    type="text"
+                    class="gf-form-input max-width-7"
+                    placeholder="value"
+                    ng-model="dimension.value"
+                    bs-typeahead="ctrl.suggestDimensionValues"
+                    ng-focus="ctrl.editDimension($index)"
+                    ng-blur="ctrl.targetBlur()"
+                    data-min-length=0
+                    style="margin-right:0">
+                <label class="gf-form-label"">
+                    <a class="pointer" ng-click="ctrl.removeDimension($index)"><i class="fa fa-close"></i></a>
+                </label>
+            </div>
+            <div class="gf-form">
+                <label class="gf-form-label">
+                    <a class="pointer" ng-click="ctrl.addDimension()"><i class="fa fa-plus"></i></a>
+                </label>
+            </div>
+            <div class="gf-form gf-form--grow">
+                <div class="gf-form-label gf-form-label--grow"></div>
+            </div>
+            <gf-form-switch
+                class="gf-form"
+                label-class="gf-form-label query-keyword"
+                label="Group_by"
+                checked="ctrl.target.group"
+                on-change="ctrl.targetBlur()"
+                switch-class="max-width-6"></gf-form-switch>
+        </div>
+        <div class="gf-form-inline">
+            <div class="gf-form">
+                <label class="gf-form-label query-keyword width-7">Function</label>
+                <div class="gf-form-select-wrapper">
+                    <select
+                        class="gf-form-input"
+                        ng-model="ctrl.target.aggregator"
+                        ng-blur="ctrl.targetBlur()"
+                        ng-options="f for f in ['none','count', 'avg', 'sum', 'min', 'max']">
+                    </select>
+                </div>
+            </div>
+            <div class="gf-form" ng-hide="ctrl.target.aggregator=='none'">
+                <label class="gf-form-label query-keyword">Period</label>
+                <input
+                    type="text"
+                    class="gf-form-input"
+                    ng-model="ctrl.target.period"
+                    ng-blur="ctrl.targetBlur()">
+            </div>
+            <div class="gf-form gf-form--grow">
+                <div class="gf-form-label gf-form-label--grow"></div>
+            </div>
+        </div>
+    </div>
+</query-editor-row>
