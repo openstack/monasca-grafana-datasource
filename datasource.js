@@ -120,6 +120,10 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     return data;
   };
 
+  MonascaDatasource.prototype.dimensionValuesQuery = function(params) {
+    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names/values', params).catch(function(err) {throw err});
+  };
+
   MonascaDatasource.prototype.buildDataQuery = function(options, from, to) {
     var params = {};
     params.name = options.metric;
@@ -468,19 +472,13 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   };
 
   MonascaDatasource.prototype.metricFindQuery = function(query) {
-    return this.metricsQuery({}).then(function(data) {
+    return this.dimensionValuesQuery({'dimension_name': query}).then(function(data) {
       var values = [];
       data = data.data.elements;
       for (var i = 0; i < data.length; i++) {
-        var dim_set = data[i].dimensions;
-        if (query in dim_set) {
-          var value = dim_set[query];
-          if (values.indexOf(value) == -1) {
-            values.push(value);
-          }
-        }
+        values.push(data[i].values);
       }
-      return _.map(values, function(value) {
+      return _.map(_.flatten(values), function(value) {
         return {text: value};
       });
     });
