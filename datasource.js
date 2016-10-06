@@ -62,7 +62,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     var promises = self.q.resolve(targets_promise).then(function(targets) {
       return targets.map(function (target) {
         target = datasource.convertPeriod(target);
-          return datasource._limitedMonascaRequest(target, {}).then(datasource.convertDataPoints).catch(function(err) {throw err});
+        return datasource._limitedMonascaRequest(target, {}, true).then(datasource.convertDataPoints).catch(function(err) {throw err});
       });
     }).catch(function(err) {throw err});
 
@@ -78,50 +78,36 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     });
   };
 
-  MonascaDatasource.prototype.namesQuery = function() {
-    return this._limitedMonascaRequest('/v2.0/metrics/names', {}).catch(function(err) {throw err});
-  };
-
-  MonascaDatasource.prototype.convertNamesList = function(data) {
-    var metrics = [];
-    data = data.data.elements;
-    for (var i = 0; i < data.length; i++) {
-      metrics.push(data[i].name);
-    }
-    return metrics;
-  };
-
   MonascaDatasource.prototype.metricsQuery = function(params) {
-    return this._limitedMonascaRequest('/v2.0/metrics', params).catch(function(err) {throw err});
+    return this._limitedMonascaRequest('/v2.0/metrics', params, true).catch(function(err) {throw err;});
   };
 
-  MonascaDatasource.prototype.buildDimensionList = function(data) {
-    var keys = [];
-    var values = {};
-    data = data.data.elements;
-    for (var i = 0; i < data.length; i++) {
-      var dim_set = data[i].dimensions;
-      for (var key in dim_set) {
-        if (keys.indexOf(key) == -1) {
-          keys.push(key);
-          values[key] = [];
-        }
-        var value = dim_set[key];
-        if (values[key].indexOf(value) == -1) {
-          values[key].push(value);
-        }
-      }
-    }
-    return {'keys' : keys, 'values' : values};
+  MonascaDatasource.prototype.namesQuery = function() {
+    var datasource = this;
+    return this._limitedMonascaRequest('/v2.0/metrics/names', {}, false).then(function(data) {
+      return datasource.convertDataList(data, 'name');
+    }).catch(function(err) {throw err;});
   };
 
-  MonascaDatasource.prototype.buildMetricList = function(data) {
-    data = data.data.elements;
-    return data;
+  MonascaDatasource.prototype.dimensionNamesQuery = function(params) {
+    var datasource = this;
+    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names', params, false).then(function(data) {
+      return datasource.convertDataList(data, 'dimension_name')
+    }).catch(function(err) {throw err;});
   };
 
   MonascaDatasource.prototype.dimensionValuesQuery = function(params) {
-    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names/values', params).catch(function(err) {throw err});
+    var datasource = this;
+    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names/values', params, false).then(function(data) {
+      return datasource.convertDataList(data, 'dimension_value');
+    }).catch(function(err) {throw err;});
+  };
+
+  MonascaDatasource.prototype.convertDataList = function(data, key) {
+    var values = data.data.elements.map(function(element) {
+      return element[key];
+    });
+    return values;
   };
 
   MonascaDatasource.prototype.buildDataQuery = function(options, from, to) {
@@ -356,7 +342,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
 
   // For use with specified or api enforced limits.
   // Pages through data until all data is retrieved.
-  MonascaDatasource.prototype._limitedMonascaRequest = function(path, params) {
+  MonascaDatasource.prototype._limitedMonascaRequest = function(path, params, aggregate) {
     var datasource = this;
     var deferred = self.q.defer();
     var data = null;
@@ -425,8 +411,11 @@ function (angular, _, moment, sdk, dateMath, kbn) {
             if (query.indexOf('merge_metrics') > -1) {
               flattenResults();
             }
-            else {
+            else if (aggregate){
               aggregateResults();
+            }
+            else {
+              data.data.elements = element_list;
             }
           }
           deferred.resolve(data);
@@ -473,12 +462,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
 
   MonascaDatasource.prototype.metricFindQuery = function(query) {
     return this.dimensionValuesQuery({'dimension_name': query}).then(function(data) {
-      var values = [];
-      data = data.data.elements;
-      for (var i = 0; i < data.length; i++) {
-        values.push(data[i].values);
-      }
-      return _.map(_.flatten(values), function(value) {
+      return _.map(data, function(value) {
         return {text: value};
       });
     });

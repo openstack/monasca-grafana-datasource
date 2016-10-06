@@ -79,9 +79,7 @@ function (angular, _, sdk) {
 
     MonascaQueryCtrl.prototype.suggestMetrics = function(query, callback) {
       if (!metricList) {
-        self.datasource.namesQuery()
-            .then(self.datasource.convertNamesList)
-            .then(function(metrics) {
+        self.datasource.namesQuery().then(function(metrics) {
           metricList = metrics;
           callback(metrics);
         });
@@ -116,22 +114,13 @@ function (angular, _, sdk) {
 
     MonascaQueryCtrl.prototype.resetDimensionList = function() {
       dimensionList = { 'keys' : [], 'values' : {} };
-      if (this.target.metric) {
-        this.datasource.metricsQuery({'name' : this.target.metric})
-            .then(this.datasource.buildDimensionList)
-            .then(function(dimensions) {
-          dimensionList = dimensions;
-        });
-      }
     };
 
     MonascaQueryCtrl.prototype.suggestDimensionKeys = function(query, callback) {
       if (dimensionList.keys.length === 0 && self.target.metric) {
-        self.datasource.metricsQuery({'name' : self.target.metric})
-            .then(self.datasource.buildDimensionList)
-            .then(function(dimensions) {
-          dimensionList = dimensions;
-          callback(dimensions.keys);
+        self.datasource.dimensionNamesQuery({'metric_name' : self.target.metric}).then(function(dimensions) {
+          dimensionList.keys = dimensions;
+          callback(dimensions);
         });
       }
       else {
@@ -141,11 +130,25 @@ function (angular, _, sdk) {
 
     MonascaQueryCtrl.prototype.suggestDimensionValues = function(query, callback) {
       var values = ['$all'];
+      var returnValues = true;
       values = values.concat(self.datasource.listTemplates());
-      if (currentDimension.key && currentDimension.key in dimensionList.values) {
-        values = values.concat(dimensionList.values[currentDimension.key]);
+      if (currentDimension.key) {
+        if (!(currentDimension.key in dimensionList.values)) {
+          returnValues = false;
+          self.datasource.dimensionValuesQuery({'metric_name' : self.target.metric, 'dimension_name': currentDimension.key})
+              .then(function(dimensionValues) {
+            dimensionList.values[currentDimension.key] = dimensionValues;
+            values = values.concat(dimensionValues);
+            callback(values);
+          });
+        }
+        else {
+          values = values.concat(dimensionList.values[currentDimension.key]);
+        }
       }
-      return values;
+      if (returnValues) {
+        return values;
+      }
     };
 
     MonascaQueryCtrl.prototype.editDimension = function(index) {
