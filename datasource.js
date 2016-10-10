@@ -191,7 +191,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     var var_options = to_replace.substring(1, to_replace.length - 1);
     var_options = var_options.split(',');
     for (var i = 0; i < var_options.length; i++) {
-      var new_query = query.replace(new RegExp(to_replace, 'g'), var_options[i]);
+      var new_query = query.split(to_replace).join(var_options[i]);
       expandedQueries = expandedQueries.concat(this.expandTemplatedQueries(new_query));
     }
     return expandedQueries;
