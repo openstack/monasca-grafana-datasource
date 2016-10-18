@@ -11,10 +11,14 @@ function(MonascaDatasource, MonascaQueryCtrl) {
   var MonascaQueryOptionsCtrl = function() {};
   MonascaQueryOptionsCtrl.templateUrl = "partials/query.options.html";
 
+  var MonascaAnnotationsQueryCtrl = function() {};
+  MonascaAnnotationsQueryCtrl.templateUrl = "partials/annotations.editor.html";
+
   return {
     'Datasource': MonascaDatasource,
     'QueryCtrl': MonascaQueryCtrl,
     'ConfigCtrl': MonascaConfigCtrl,
-    'QueryOptionsCtrl': MonascaQueryOptionsCtrl
+    'QueryOptionsCtrl': MonascaQueryOptionsCtrl,
+    'AnnotationsQueryCtrl': MonascaAnnotationsQueryCtrl
   };
 });

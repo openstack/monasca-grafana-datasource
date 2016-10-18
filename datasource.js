@@ -39,13 +39,12 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     var targets_list = [];
     for (var i = 0; i < options.targets.length; i++) {
       var target = options.targets[i];
-      // Missing target.period indicates a new unfilled query
-      if (target.error || target.hide || !target.period) {
+      if (target.error || target.hide || !target.metric) {
         continue;
       }
       var query = this.buildDataQuery(options.targets[i], from, to);
       query = self.templateSrv.replace(query, options.scopedVars);
-      var query_list
+      var query_list;
       if (options.group){
         query_list = this.expandTemplatedQueries(query);
       }
@@ -62,9 +61,9 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     var promises = self.q.resolve(targets_promise).then(function(targets) {
       return targets.map(function (target) {
         target = datasource.convertPeriod(target);
-        return datasource._limitedMonascaRequest(target, {}, true).then(datasource.convertDataPoints).catch(function(err) {throw err});
+        return datasource._limitedMonascaRequest(target, {}, true).then(datasource.convertDataPoints).catch(function(err) {throw err;});
       });
-    }).catch(function(err) {throw err});
+    }).catch(function(err) {throw err;});
 
     return self.q.resolve(promises).then(function(promises) {
       return self.q.all(promises).then(function(results) {
@@ -73,7 +72,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
             return a.target.localeCompare(b.target);
           });
         });
-        return { data: _.flatten(sorted_results).filter(function(result) { return !_.isEmpty(result)}) };
+        return { data: _.flatten(sorted_results).filter(function(result) { return !_.isEmpty(result);}) };
       });
     });
   };
@@ -92,7 +91,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   MonascaDatasource.prototype.dimensionNamesQuery = function(params) {
     var datasource = this;
     return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names', params, false).then(function(data) {
-      return datasource.convertDataList(data, 'dimension_name')
+      return datasource.convertDataList(data, 'dimension_name');
     }).catch(function(err) {throw err;});
   };
 
@@ -144,7 +143,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       params.alias = options.alias;
     }
     var path;
-    if (options.aggregator != 'none') {
+    if (options.aggregator && options.aggregator != 'none') {
       params.statistics = options.aggregator;
       params.period = options.period;
       path = '/v2.0/metrics/statistics';
@@ -256,11 +255,11 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     function keysSortedByLengthDesc(obj) {
       var keys = [];
       for (var key in obj) {
-        keys.push(key)
+        keys.push(key);
       }
-      function byLength(a, b) {return b.length - a.length}
-      return keys.sort(byLength)
-    };
+      function byLength(a, b) {return b.length - a.length;}
+      return keys.sort(byLength);
+    }
 
     for (var i = 0; i < query_list.length; i++) {
       var query = query_list[i];
@@ -287,11 +286,11 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     function keysSortedByLengthDesc(obj) {
       var keys = [];
       for (var key in obj) {
-        keys.push(key)
+        keys.push(key);
       }
-      function byLength(a, b) {return b.length - a.length}
-      return keys.sort(byLength)
-    };
+      function byLength(a, b) {return b.length - a.length;}
+      return keys.sort(byLength);
+    }
 
     var url = data.config.url;
     var results = [];
@@ -309,9 +308,9 @@ function (angular, _, moment, sdk, dateMath, kbn) {
         var keys = keysSortedByLengthDesc(element.dimensions);
         for (var k in keys)
         {
-          alias = alias.replace(new RegExp("@"+keys[k], 'g'), element.dimensions[keys[k]])
+          alias = alias.replace(new RegExp("@"+keys[k], 'g'), element.dimensions[keys[k]]);
         }
-        target = alias
+        target = alias;
       }
 
       var raw_datapoints;
@@ -328,14 +327,19 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       var datapoints = [];
       var timeCol = element.columns.indexOf('timestamp');
       var dataCol = element.columns.indexOf(aggregator);
+      var metaCol = element.columns.indexOf('value_meta');
       for (var j = 0; j < raw_datapoints.length; j++) {
         var datapoint = raw_datapoints[j];
         var time = new Date(datapoint[timeCol]);
         var point = datapoint[dataCol];
-        datapoints.push([point, time.getTime()]);
+        var newpoint = [point, time.getTime()];
+        if (metaCol >= 0) {
+          newpoint.push(datapoint[metaCol]);
+        }
+        datapoints.push(newpoint);
       }
       var convertedData = { 'target': target, 'datapoints': datapoints };
-      results.push(convertedData)
+      results.push(convertedData);
     }
     return results;
   };
@@ -382,22 +386,22 @@ function (angular, _, moment, sdk, dateMath, kbn) {
         }
       }
       if (data.data.elements[0].measurements){
-        data.data.elements[0].measurements = _.flatten(elements, true)
+        data.data.elements[0].measurements = _.flatten(elements, true);
       }
       if (data.data.elements[0].statistics){
-        data.data.elements[0].statistics = _.flatten(elements, true)
+        data.data.elements[0].statistics = _.flatten(elements, true);
       }
     }
 
     function requestAll(multi_page){
       datasource._monascaRequest(path, params)
         .then(function(d) {
-          data = d
+          data = d;
           element_list = element_list.concat(d.data.elements);
           if(d.data.links) {
             for (var i = 0; i < d.data.links.length; i++) {
               if (d.data.links[i].rel == 'next'){
-                var next = decodeURIComponent(d.data.links[i].href)
+                var next = decodeURIComponent(d.data.links[i].href);
                 var offset = next.match(/offset=([^&]*)/);
                 params.offset = offset[1];
                 requestAll(true);
@@ -406,7 +410,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
             }
           }
           // Handle incosistent element.id from merging here.  Remove when this bug is fixed.
-          var query = d.data.links[0].href
+          var query = d.data.links[0].href;
           if (multi_page){
             if (query.indexOf('merge_metrics') > -1) {
               flattenResults();
@@ -419,7 +423,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
             }
           }
           deferred.resolve(data);
-        }).catch(function(err) {deferred.reject(err)});
+        }).catch(function(err) {deferred.reject(err);});
     }
 
     requestAll(false);
@@ -442,13 +446,13 @@ function (angular, _, moment, sdk, dateMath, kbn) {
 
     return this.backendSrv.datasourceRequest(options).catch(function(err) {
       if (err.status !== 0 || err.status >= 300) {
-        var monasca_response
+        var monasca_response;
         if (err.data) {
           if (err.data.message){
             monasca_response = err.data.message;
           } else{
-            var err_name = Object.keys(err.data)[0]
-            monasca_response = err.data[err_name].message
+            var err_name = Object.keys(err.data)[0];
+            monasca_response = err.data[err_name].message;
           }
         }
         if (monasca_response) {
@@ -465,6 +469,37 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       return _.map(data, function(value) {
         return {text: value};
       });
+    });
+  };
+
+  MonascaDatasource.prototype.annotationQuery = function(options) {
+    var dimensions = [];
+    if (options.annotation.dimensions) {
+        options.annotation.dimensions.split(',').forEach(function(x){
+        var dim = x.split('=');
+        dimensions.push({'key': dim[0], 'value': dim[1]});
+      });
+      }
+    options.targets = [{ 'metric': options.annotation.metric, 'dimensions': dimensions}];
+    return this.query(options).then(function(result) {
+      var list = [];
+      for (var i = 0; i < result.data.length; i++) {
+        var target = result.data[i];
+        for (var y = 0; y < target.datapoints.length; y++) {
+          var datapoint = target.datapoints[y];
+          if (!datapoint[0] && !options.annotation.shownull) { continue; }
+          var event = {
+            annotation: options.annotation,
+            time: datapoint[1],
+            title: target.target
+          };
+          if (datapoint.length > 2 && options.annotation.showmeta){ // value_meta exists
+            event.text = datapoint[2].detail;
+          }
+          list.push(event);
+        }
+      }
+      return list;
     });
   };
 
