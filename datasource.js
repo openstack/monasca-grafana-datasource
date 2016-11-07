@@ -44,13 +44,10 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       }
       var query = this.buildDataQuery(options.targets[i], from, to);
       query = self.templateSrv.replace(query, options.scopedVars);
-      var query_list;
-      if (options.group){
-        query_list = this.expandTemplatedQueries(query);
-      }
-      else {
-        query_list = this.expandQueries(query);
-      }
+      var query_list = this.expandTemplatedQueries(query);
+      // Pre query aliasing
+      // Used when querying with group_by, where some dimensions are not returned
+      query_list = query_list.map(datasource.autoAlias);
       targets_list.push(query_list);
     }
 
@@ -112,32 +109,38 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   MonascaDatasource.prototype.buildDataQuery = function(options, from, to) {
     var params = {};
     params.name = options.metric;
-    if (options.group) {
-      params.group_by = '*';
-    }
-    else {
-      params.merge_metrics = 'true';
-    }
+
     params.start_time = from;
     if (to) {
       params.end_time = to;
     }
     if (options.dimensions) {
-      var dimensions = '';
+      var dimensions = [];
+      var group_by = [];
       for (var i = 0; i < options.dimensions.length; i++) {
         var key = options.dimensions[i].key;
         var value = options.dimensions[i].value;
-        if (options.group && value == '$all') {
-          continue;
+        if (value == '$all' || value =='*') {
+          group_by.push(key);
         }
-        if (dimensions) {
-          dimensions += ',';
+        else {
+          dimensions.push(key + ':' + value);
         }
-        dimensions += key;
-        dimensions += ':';
-        dimensions += value;
       }
-      params.dimensions = dimensions;
+      var dimensions_string = dimensions.join(',');
+      var group_by_string = group_by.join(',');
+      if (dimensions_string){
+        params.dimensions = dimensions;
+      }
+      if (group_by_string){
+        params.group_by = group_by;
+      }
+    }
+    if (options.group) {
+      params.group_by = '*';
+    }
+    else {
+      params.merge_metrics = 'true';
     }
     if (options.alias) {
       params.alias = options.alias;
@@ -146,37 +149,15 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     if (options.aggregator && options.aggregator != 'none') {
       params.statistics = options.aggregator;
       params.period = options.period;
-      path = '/v2.0/metrics/statistics';
+      path = '/v2.0/metrics/statistics?';
     }
     else {
-      path = '/v2.0/metrics/measurements';
+      path = '/v2.0/metrics/measurements?';
     }
-    var first = true;
-    Object.keys(params).forEach(function (key) {
-      if (first) {
-        path += '?';
-        first = false;
-      }
-      else {
-        path += '&';
-      }
-      path += key;
-      path += '=';
-      path += params[key];
-    });
+    path += Object.keys(params).map(function(key) {
+      return key + '=' + params[key];
+    }).join('&');
     return path;
-  };
-
-  MonascaDatasource.prototype.expandQueries = function(query) {
-    var datasource = this;
-    return this.expandAllQueries(query).then(function(partial_query_list) {
-      var query_list = [];
-      for (var i = 0; i < partial_query_list.length; i++) {
-        query_list = query_list.concat(datasource.expandTemplatedQueries(partial_query_list[i]));
-      }
-      query_list = datasource.autoAlias(query_list);
-      return query_list;
-    });
   };
 
   MonascaDatasource.prototype.expandTemplatedQueries = function(query) {
@@ -196,62 +177,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     return expandedQueries;
   };
 
-  MonascaDatasource.prototype.expandAllQueries = function(query) {
-    if (query.indexOf("$all") > -1) {
-      var metric_name = query.match(/name=([^&]*)/)[1];
-      var start_time = query.match(/start_time=([^&]*)/)[1];
-
-      // Find all matching subqueries
-      var dimregex = /(?:dimensions=|,)([^,]*):\$all/g;
-      var matches, neededDimensions = [];
-      while (matches = dimregex.exec(query)) {
-        neededDimensions.push(matches[1]);
-      }
-
-      var metricQueryParams = {'name' : metric_name, 'start_time': start_time};
-      var queriesPromise = this.metricsQuery(metricQueryParams).then(function(data) {
-        var expandedQueries = [];
-        var metrics = data.data.elements;
-        var matchingMetrics = {}; // object ensures uniqueness of dimension sets
-        for (var i = 0; i < metrics.length; i++) {
-          var dimensions = metrics[i].dimensions;
-          var set = {};
-          var skip = false;
-          for (var j = 0; j < neededDimensions.length; j++) {
-            var key = neededDimensions[j];
-            if (!(key in dimensions)) {
-              skip = true;
-              break;
-            }
-            set[key] = dimensions[key];
-          }
-          if (!skip) {
-            matchingMetrics[JSON.stringify(set)] = set;
-          }
-        }
-        Object.keys(matchingMetrics).forEach(function (set) {
-          var new_query = query;
-          var match = matchingMetrics[set];
-          Object.keys(match).forEach(function (key) {
-            var to_replace = key+":\\$all";
-            var replacement = key+":"+match[key];
-            new_query = new_query.replace(new RegExp(to_replace, 'g'), replacement);
-          });
-          expandedQueries.push(new_query);
-        });
-        return expandedQueries;
-      });
-
-      return queriesPromise;
-    }
-    else {
-      return self.q.resolve([query]);
-    }
-  };
-
-  // Alias based on dimensions in query
-  // Used when querying with merge flag, where no dimension info is returned.
-  MonascaDatasource.prototype.autoAlias = function(query_list) {
+  MonascaDatasource.prototype.autoAlias = function(query, dimensions, return_target) {
     function keysSortedByLengthDesc(obj) {
       var keys = [];
       for (var key in obj) {
@@ -261,68 +187,62 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       return keys.sort(byLength);
     }
 
-    for (var i = 0; i < query_list.length; i++) {
-      var query = query_list[i];
-      var alias = query.match(/alias=[^&@]*@([^&]*)/);
-      var dimensions = query.match(/dimensions=([^&]*)/);
-      if (alias && dimensions[1]) {
-        var dimensions_list = dimensions[1].split(',');
-        var dimensions_dict = {};
+    if (typeof(dimensions) !== "object") {
+      var dimensions_string = query.match(/dimensions=([^&]*)/);
+      if (dimensions_string) {
+        var dimensions_list = dimensions_string[1].split(',');
+        dimensions = {};
         for (var j = 0; j < dimensions_list.length; j++) {
           var dim = dimensions_list[j].split(':');
-          dimensions_dict[dim[0]] = dim[1];
+          dimensions[dim[0]] = dim[1];
         }
-        var keys = keysSortedByLengthDesc(dimensions_dict);
-        for (var k in keys) {
-          query = query.replace(new RegExp("@"+keys[k], 'g'), dimensions_dict[keys[k]]);
-        }
-        query_list[i] = query;
       }
     }
-    return query_list;
+
+    var target = null;
+    var alias_string = query.match(/alias=[^&]*/);
+    if (alias_string) {
+      var alias = alias_string[0];
+      var keys = keysSortedByLengthDesc(dimensions);
+      for (var k in keys) {
+        alias = alias.replace(new RegExp("@"+keys[k], 'g'), dimensions[keys[k]]);
+      }
+      query = query.replace(alias_string[0], alias);
+      target = alias.match(/alias=(.*)/)[1];
+    }
+    if (return_target === true) {
+      return target;
+    }
+    return query;
   };
 
   MonascaDatasource.prototype.convertDataPoints = function(data) {
-    function keysSortedByLengthDesc(obj) {
-      var keys = [];
-      for (var key in obj) {
-        keys.push(key);
-      }
-      function byLength(a, b) {return b.length - a.length;}
-      return keys.sort(byLength);
-    }
-
     var url = data.config.url;
     var results = [];
 
     for (var i = 0; i < data.data.elements.length; i++)
     {
       var element = data.data.elements[i];
-
       var target = element.name;
-      var alias = data.config.url.match(/alias=([^&]*)/);
-      // Alias based on returned dimensions
+
+      // Post query aliasing
       // Used when querying with group_by flag where dimensions are not specified in initial query
+      var alias = self.autoAlias(data.config.url, element.dimensions, true);
       if (alias) {
-        alias = alias[1];
-        var keys = keysSortedByLengthDesc(element.dimensions);
-        for (var k in keys)
-        {
-          alias = alias.replace(new RegExp("@"+keys[k], 'g'), element.dimensions[keys[k]]);
-        }
         target = alias;
       }
 
       var raw_datapoints;
-      var aggregator;
+      var aggregator = 'value';
       if ('measurements' in element) {
         raw_datapoints = element.measurements;
-        aggregator = 'value';
       }
       else {
         raw_datapoints = element.statistics;
-        aggregator = url.match(/statistics=[^&]*/);
-        aggregator = aggregator[0].substring('statistics='.length);
+        if (element.columns.indexOf(aggregator) < 0) {
+          aggregator = url.match(/statistics=[^&]*/);
+          aggregator = aggregator[0].substring('statistics='.length);
+        }
       }
       var datapoints = [];
       var timeCol = element.columns.indexOf('timestamp');
@@ -373,26 +293,6 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       });
     }
 
-    // Handle incosistent element.id from merging here.  Remove when this bug is fixed.
-    function flattenResults() {
-      var elements = [];
-      for (var i = 0; i < element_list.length; i++) {
-        var element = element_list[i];
-        if (element.measurements){
-          elements.push(element.measurements);
-        }
-        if (element.statistics){
-          elements.push(element.statistics);
-        }
-      }
-      if (data.data.elements[0].measurements){
-        data.data.elements[0].measurements = _.flatten(elements, true);
-      }
-      if (data.data.elements[0].statistics){
-        data.data.elements[0].statistics = _.flatten(elements, true);
-      }
-    }
-
     function requestAll(multi_page){
       datasource._monascaRequest(path, params)
         .then(function(d) {
@@ -409,13 +309,8 @@ function (angular, _, moment, sdk, dateMath, kbn) {
               }
             }
           }
-          // Handle incosistent element.id from merging here.  Remove when this bug is fixed.
-          var query = d.data.links[0].href;
           if (multi_page){
-            if (query.indexOf('merge_metrics') > -1) {
-              flattenResults();
-            }
-            else if (aggregate){
+            if (aggregate){
               aggregateResults();
             }
             else {
@@ -464,6 +359,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     });
   };
 
+  // Called by grafana to retrieve possible query template options
   MonascaDatasource.prototype.metricFindQuery = function(query) {
     return this.dimensionValuesQuery({'dimension_name': query}).then(function(data) {
       return _.map(data, function(value) {
@@ -472,6 +368,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     });
   };
 
+  // Called by grafana to retrieve data for dispalying annotations
   MonascaDatasource.prototype.annotationQuery = function(options) {
     var dimensions = [];
     if (options.annotation.dimensions) {
@@ -511,6 +408,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     return template_list;
   };
 
+  // Called by grafana to test the datasource
   MonascaDatasource.prototype.testDatasource = function() {
     return this.namesQuery().then(function () {
       return { status: 'success', message: 'Data source is working', title: 'Success' };
