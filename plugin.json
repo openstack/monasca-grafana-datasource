@@ -1,6 +1,6 @@
 {
   "name": "Monasca",
-  "id": "monasca-grafana-datasource",
+  "id": "monasca-datasource",
   "type": "datasource",
 
   "staticRoot": ".",
