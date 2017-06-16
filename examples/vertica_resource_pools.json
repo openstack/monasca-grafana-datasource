@@ -1,0 +1,842 @@
+{
+  "id": 5547,
+  "title": "Monasca Resource Pools",
+  "tags": [
+    "monasca"
+  ],
+  "style": "dark",
+  "timezone": "browser",
+  "editable": true,
+  "sharedCrosshair": false,
+  "hideControls": false,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "text": "api_pool",
+          "value": "api_pool"
+        },
+        "datasource": "Monasca",
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "resource_pool",
+        "options": [
+          {
+            "text": "api_pool",
+            "value": "api_pool",
+            "selected": true
+          },
+          {
+            "text": "dbd",
+            "value": "dbd",
+            "selected": false
+          },
+          {
+            "text": "general",
+            "value": "general",
+            "selected": false
+          },
+          {
+            "text": "jvm",
+            "value": "jvm",
+            "selected": false
+          },
+          {
+            "text": "persister_pool",
+            "value": "persister_pool",
+            "selected": false
+          },
+          {
+            "text": "recovery",
+            "value": "recovery",
+            "selected": false
+          },
+          {
+            "text": "refresh",
+            "value": "refresh",
+            "selected": false
+          },
+          {
+            "text": "sysdata",
+            "value": "sysdata",
+            "selected": false
+          },
+          {
+            "text": "sysquery",
+            "value": "sysquery",
+            "selected": false
+          },
+          {
+            "text": "tm",
+            "value": "tm",
+            "selected": false
+          },
+          {
+            "text": "wosdata",
+            "value": "wosdata",
+            "selected": false
+          }
+        ],
+        "query": "resource_pool",
+        "refresh": 1,
+        "regex": "",
+        "sort": 0,
+        "tagValuesQuery": null,
+        "tagsQuery": null,
+        "type": "query"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 2,
+        "includeAll": true,
+        "label": null,
+        "multi": false,
+        "name": "region",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "NCW",
+            "value": "NCW"
+          },
+          {
+            "selected": false,
+            "text": "NCE",
+            "value": "NCE"
+          }
+        ],
+        "query": "NCW,NCE",
+        "type": "custom"
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "refresh": "1h",
+  "schemaVersion": 13,
+  "version": 30,
+  "links": [],
+  "gnetId": null,
+  "rows": [
+    {
+      "collapse": false,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 1,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": null,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "inuse @hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.memory_inuse_kb",
+              "period": "300",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "total",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                }
+              ],
+              "error": "",
+              "group": false,
+              "metric": "vertica.resource.pool.memory_size_actual_kb",
+              "period": "300",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool memory usage ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "deckbytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCW",
+              "value": "NCW"
+            }
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 6,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": null,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "inuse @hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.memory_inuse_kb",
+              "period": "300",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "total",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                }
+              ],
+              "error": "",
+              "group": false,
+              "metric": "vertica.resource.pool.memory_size_actual_kb",
+              "period": "300",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool memory usage ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "deckbytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCE",
+              "value": "NCE"
+            }
+          },
+          "repeatIteration": 1497628517061,
+          "repeatPanelId": 1
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 4,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.running_query_count",
+              "period": "300",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool running queries ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCW",
+              "value": "NCW"
+            }
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 7,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.running_query_count",
+              "period": "300",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool running queries ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCE",
+              "value": "NCE"
+            }
+          },
+          "repeatIteration": 1497628517061,
+          "repeatPanelId": 4
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 5,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.rejection_count",
+              "period": "300",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool rejected queries ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCW",
+              "value": "NCW"
+            }
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "id": 8,
+          "isNew": true,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "seriesOverrides": [],
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@hostname",
+              "dimensions": [
+                {
+                  "key": "resource_pool",
+                  "value": "$resource_pool"
+                },
+                {
+                  "key": "region",
+                  "value": "$region"
+                },
+                {
+                  "key": "hostname",
+                  "value": "$all"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "vertica.resource.pool.rejection_count",
+              "period": "300",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "$resource_pool rejected queries ($region)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "scopedVars": {
+            "region": {
+              "selected": false,
+              "text": "NCE",
+              "value": "NCE"
+            }
+          },
+          "repeatIteration": 1497628517061,
+          "repeatPanelId": 5
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    }
+  ]
+}

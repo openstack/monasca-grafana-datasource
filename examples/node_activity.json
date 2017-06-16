@@ -1,0 +1,1212 @@
+{
+  "id": 4587,
+  "title": "Node Activity",
+  "description": "",
+  "tags": [
+    "drilldown"
+  ],
+  "style": "dark",
+  "timezone": "utc",
+  "editable": true,
+  "sharedCrosshair": true,
+  "hideControls": false,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "text": "1m",
+          "value": "1m"
+        },
+        "datasource": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "",
+        "multi": false,
+        "name": "interval",
+        "options": [
+          {
+            "text": "1m",
+            "value": "1m",
+            "selected": true
+          },
+          {
+            "text": "5m",
+            "value": "5m",
+            "selected": false
+          },
+          {
+            "text": "10m",
+            "value": "10m",
+            "selected": false
+          },
+          {
+            "text": "30m",
+            "value": "30m",
+            "selected": false
+          },
+          {
+            "text": "1h",
+            "value": "1h",
+            "selected": false
+          },
+          {
+            "text": "6h",
+            "value": "6h",
+            "selected": false
+          },
+          {
+            "text": "12h",
+            "value": "12h",
+            "selected": false
+          },
+          {
+            "text": "1d",
+            "value": "1d",
+            "selected": false
+          },
+          {
+            "text": "7d",
+            "value": "7d",
+            "selected": false
+          },
+          {
+            "text": "14d",
+            "value": "14d",
+            "selected": false
+          },
+          {
+            "text": "30d",
+            "value": "30d",
+            "selected": false
+          }
+        ],
+        "query": "1m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "refresh": 2,
+        "type": "interval"
+      },
+      {
+        "current": {
+          "text": "$hostname",
+          "value": "$hostname"
+        },
+        "datasource": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "",
+        "multi": false,
+        "name": "hostname",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "refresh": 0,
+        "type": "constant"
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "Monasca",
+        "dimensions": "hostname=$hostname",
+        "enable": true,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "limit": 100,
+        "metric": "puppet.run.changed",
+        "name": "Puppet Changes",
+        "shownull": false,
+        "type": "alert"
+      }
+    ]
+  },
+  "refresh": false,
+  "schemaVersion": 13,
+  "version": 7,
+  "links": [],
+  "gnetId": null,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "25px",
+      "isNew": false,
+      "panels": [
+        {
+          "content": "To use this dashboard, select the hostname drop down and type the name of the node to view.",
+          "editable": true,
+          "error": false,
+          "id": 13,
+          "isNew": true,
+          "links": [],
+          "mode": "text",
+          "span": 12,
+          "title": "",
+          "type": "text"
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Instructions",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {
+            "IO Wait": "#BF1B00",
+            "Idle": "#7EB26D",
+            "System": "#EAB839",
+            "User": "#6ED0E0",
+            "cpu.idle_perc": "#7EB26D",
+            "cpu.user_perc": "#6ED0E0"
+          },
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 6,
+          "grid": {},
+          "id": 12,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": 12,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "IO Wait",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "cpu.wait_perc",
+              "period": "$interval",
+              "refId": "D"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "User",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "cpu.user_perc",
+              "period": "$interval",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "System",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "cpu.system_perc",
+              "period": "$interval",
+              "refId": "B"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "Idle",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "cpu.idle_perc",
+              "period": "$interval",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "CPU ($hostname)",
+          "tooltip": {
+            "msResolution": true,
+            "ordering": "alphabetical",
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percent",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "CPU",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {
+            "Buffers": "#5195CE",
+            "Free": "#7EB26D",
+            "Used": "#1F78C1"
+          },
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 6,
+          "grid": {},
+          "id": 14,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "Used",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "mem.used_real_mb",
+              "period": "$interval",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "Buffers",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "mem.used_buffers",
+              "period": "$interval",
+              "refId": "B"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "Cache",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "mem.used_cache",
+              "period": "$interval",
+              "refId": "C"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "Free",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "mem.free_mb",
+              "period": "$interval",
+              "refId": "D"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Memory ($hostname)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "mbytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Memory",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 15,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@mount_point",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "disk.space_used_perc",
+              "period": "$interval",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Disk ($hostname)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": false,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percent",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Disk",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 11,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": 12,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@device In",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.in_bits_sec",
+              "period": "$interval",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "@device Out",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.out_bits_sec",
+              "period": "$interval",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Net In/Out ($hostname)",
+          "tooltip": {
+            "msResolution": true,
+            "ordering": "alphabetical",
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "bps",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Net",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 16,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@device In",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.in_packets_sec",
+              "period": "300",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "@device Out",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.out_packets_sec",
+              "period": "300",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Packets/Sec In/Out ($hostname)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "New row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 17,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "@device In",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.in_errors_sec",
+              "period": "$interval",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "@device Out",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "net.out_errors_sec",
+              "period": "$interval",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Net Errors/Sec ($hostname)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "New row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "decimals": 1,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 10,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": 6,
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "region",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "1 minute",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "load.avg_1_min",
+              "period": "$interval",
+              "refId": "A"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "5 minute",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "load.avg_5_min",
+              "period": "$interval",
+              "refId": "B"
+            },
+            {
+              "aggregator": "avg",
+              "alias": "15 minute",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "load.avg_15_min",
+              "period": "$interval",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Load ($hostname)",
+          "tooltip": {
+            "msResolution": true,
+            "ordering": "alphabetical",
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "percentunit",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Load",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": true,
+      "height": 250,
+      "isNew": false,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "fill": 0,
+          "id": 18,
+          "isNew": true,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "aggregator": "none",
+              "alias": "max",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "conntrack.connections.open.max",
+              "period": "300",
+              "refId": "A"
+            },
+            {
+              "aggregator": "none",
+              "alias": "avg",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "conntrack.connections.open.avg",
+              "period": "300",
+              "refId": "B"
+            },
+            {
+              "aggregator": "none",
+              "alias": "min",
+              "dimensions": [
+                {
+                  "key": "hostname",
+                  "value": "$hostname"
+                }
+              ],
+              "error": "",
+              "group": true,
+              "metric": "conntrack.connections.open.min",
+              "period": "300",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Conntrack Connections ($hostname)",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": true,
+      "title": "Node Metrics",
+      "titleSize": "h6"
+    }
+  ]
+}
