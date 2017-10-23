@@ -1,0 +1,27 @@
+{
+  "name": "monasca-grafana-datasource",
+  "version": "1.1.0",
+  "description": "Grafana datasource for use with OpenStack Monasca API",
+  "main": "datasource.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openstack/monasca-grafana-datasource.git"
+  },
+  "keywords": [
+    "grafana",
+    "monasca",
+    "datasource"
+  ],
+  "author": "OpenStack",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://storyboard.openstack.org/#!/project/867"
+  },
+  "homepage": "https://github.com/openstack/monasca-grafana-datasource#readme"
+}
