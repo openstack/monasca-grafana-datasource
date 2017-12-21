@@ -33,27 +33,22 @@
 </div>
 
 <div class="gf-form-group">
-    <h3 class="page-heading">Authentication</h3>
+    <h3 class="page-heading">Monasca details</h3>
     <div class="gf-form-inline">
-        <div class="gf-form max-width-30" ng-show='ctrl.current.jsonData.authMode == "Token"'>
+        <div class="gf-form max-width-30">
             <span class="gf-form-label width-7">Token</span>
             <input class="gf-form-input" type="text" ng-model='ctrl.current.jsonData.token' placeholder=""></input>
             <info-popover mode="right-absolute">
-                <span>A token is required to autenticate if neither Keystone auth nor Horizon auth is set.</span>
+                <span>A token is required to autenticate if Keystone auth is not set.</span>
             </info-popover>
         </div>
     </div>
     <div class="gf-form-inline">
         <div class="gf-form max-width-30">
             <span class="gf-form-label width-7">Auth</span>
-            <div class="gf-form-select-wrapper gf-form-select-wrapper--has-help-icon max-width-24">
-                <select class="gf-form-input" ng-model="ctrl.current.jsonData.authMode" ng-options="f for f in ['Keystone', 'Horizon', 'Token']"></select>
-                <info-popover mode="right-absolute">
-                    Keystone = Authenticate against Keystone (requires Keystone support in Grafana)<br>
-                    Horizon = Use Horizon session for authentication (requires direct access and monasca-ui Horizon plugin)<br>
-                    Token = Use static Keystone token for authentication
-                </info-popover>
-            </div>
+            <gf-form-switch class="gf-form" label="Keystone Auth"
+                checked="ctrl.current.jsonData.keystoneAuth" switch-class="max-width-6">
+            </gf-form-switch>
         </div>
     </div>
 </div>

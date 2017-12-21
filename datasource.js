@@ -14,34 +14,14 @@ function (angular, _, moment, sdk, dateMath, kbn) {
 
   function MonascaDatasource(instanceSettings, $q, backendSrv, templateSrv) {
     this.url = instanceSettings.url;
-    this.url_version = '/v2.0'
     this.name = instanceSettings.name;
 
     if (instanceSettings.jsonData) {
       this.token = instanceSettings.jsonData.token;
-      switch ( instanceSettings.jsonData.authMode ) {
-        case "Keystone":
-          this.keystoneAuth = true;
-          this.useHorizonProxy = false;
-          break;
-        case "Horizon":
-          this.keystoneAuth = false;
-          this.useHorizonProxy = true;
-          this.token = null;
-          break;
-        case "Token":
-          this.keystoneAuth = false;
-          this.useHorizonProxy = false;
-          break;
-        }
+      this.keystoneAuth = instanceSettings.jsonData.keystoneAuth;
     } else {
       this.token = null;
       this.keystoneAuth = null;
-      this.useHorizonProxy = false;
-    }
-
-    if ( this.useHorizonProxy == true ) {
-      this.url_version = '';
     }
 
     this.q = $q;
@@ -95,36 +75,31 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   };
 
   MonascaDatasource.prototype.metricsQuery = function(params) {
-    var url = this.url_version + '/metrics';
-    return this._limitedMonascaRequest(url, params, true).catch(function(err) {throw err;});
+    return this._limitedMonascaRequest('/v2.0/metrics', params, true).catch(function(err) {throw err;});
   };
 
   MonascaDatasource.prototype.namesQuery = function() {
     var datasource = this;
-    var url = this.url_version + '/metrics/names';
-    return this._limitedMonascaRequest(url, {}, false).then(function(data) {
+    return this._limitedMonascaRequest('/v2.0/metrics/names', {}, false).then(function(data) {
       return datasource.convertDataList(data, 'name');
     }).catch(function(err) {throw err;});
   };
 
   MonascaDatasource.prototype.dimensionNamesQuery = function(params) {
     var datasource = this;
-    var url = this.url_version + '/metrics/dimensions/names';
-    return this._limitedMonascaRequest(url, params, false).then(function(data) {
+    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names', params, false).then(function(data) {
       return datasource.convertDataList(data, 'dimension_name');
     }).catch(function(err) {throw err;});
   };
 
   MonascaDatasource.prototype.dimensionValuesQuery = function(params) {
     var datasource = this;
-    var url = this.url_version + '/metrics/dimensions/names/values';
-    return this._limitedMonascaRequest(url, params, false).then(function(data) {
+    return this._limitedMonascaRequest('/v2.0/metrics/dimensions/names/values', params, false).then(function(data) {
       return datasource.convertDataList(data, 'dimension_value');
     }).catch(function(err) {throw err;});
   };
 
   MonascaDatasource.prototype.convertDataList = function(data, key) {
-    if ( JSON.stringify(data.data) === '{}' ) { return {}; }
     var values = data.data.elements.map(function(element) {
       return element[key];
     });
@@ -174,10 +149,10 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     if (options.aggregator && options.aggregator != 'none') {
       params.statistics = options.aggregator;
       params.period = options.period;
-      path = this.url_version + '/metrics/statistics?';
+      path = '/v2.0/metrics/statistics?';
     }
     else {
-      path = this.url_version + '/metrics/measurements?';
+      path = '/v2.0/metrics/measurements?';
     }
     path += Object.keys(params).map(function(key) {
       return key + '=' + params[key];
