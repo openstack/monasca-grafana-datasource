@@ -51,6 +51,14 @@ function (angular, _, moment, sdk, dateMath, kbn) {
     self = this;
   }
 
+  MonascaDatasource.prototype.timeRange = function() {
+    var timeRange = angular.element('grafana-app').injector().get('timeSrv').timeRange();
+    return {
+      start_time: this.translateTime(timeRange.from),
+      end_time: this.translateTime(timeRange.to),
+    };
+  };
+
   MonascaDatasource.prototype.query = function(options) {
     var datasource = this;
     var from =  this.translateTime(options.range.from);
@@ -110,6 +118,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   MonascaDatasource.prototype.dimensionNamesQuery = function(params) {
     var datasource = this;
     var url = this.url_version + '/metrics/dimensions/names';
+    params = Object.assign(params, this.timeRange())
     return this._limitedMonascaRequest(url, params, false).then(function(data) {
       return datasource.convertDataList(data, 'dimension_name');
     }).catch(function(err) {throw err;});
@@ -118,6 +127,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
   MonascaDatasource.prototype.dimensionValuesQuery = function(params) {
     var datasource = this;
     var url = this.url_version + '/metrics/dimensions/names/values';
+    params = Object.assign(params, this.timeRange())
     return this._limitedMonascaRequest(url, params, false).then(function(data) {
       return datasource.convertDataList(data, 'dimension_value');
     }).catch(function(err) {throw err;});
