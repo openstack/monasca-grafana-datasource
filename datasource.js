@@ -463,7 +463,7 @@ function (angular, _, moment, sdk, dateMath, kbn) {
       var period = regex[0].substring('period='.length);
       var matches = period.match(kbn.interval_regex);
       if (matches) {
-        period = kbn.interval_to_seconds(period);
+        period = kbn.intervalToSeconds(period);
         target = target.replace(regex, 'period='+period);
       }
     }
